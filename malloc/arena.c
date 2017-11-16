@@ -309,7 +309,7 @@ ptmalloc_unlock_all2 (void)
   free_list = NULL;
   for (ar_ptr = &main_arena;; )
     {
-      mutex_init (&ar_ptr->mutex);
+      spin_init (&ar_ptr->mutex);
       if (ar_ptr != save_arena)
         {
 	  /* This arena is no longer attached to any thread.  */
@@ -806,7 +806,7 @@ _int_new_arena (size_t size)
   LIBC_PROBE (memory_arena_new, 2, a, size);
   mstate replaced_arena = thread_arena;
   thread_arena = a;
-  mutex_init (&a->mutex);
+  spin_init (&a->mutex);
 
   (void) mutex_lock (&list_lock);
 

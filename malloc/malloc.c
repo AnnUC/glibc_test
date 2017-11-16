@@ -1687,7 +1687,7 @@ typedef struct malloc_chunk *mfastbinptr;
 struct malloc_state
 {
   /* Serialize access.  */
-  mutex_t mutex;
+  usr_spinlock mutex;
 
   /* Flags (formerly in max_fast).  */
   int flags;
@@ -1762,7 +1762,7 @@ struct malloc_par
 
 static struct malloc_state main_arena =
 {
-  .mutex = LLL_LOCK_INITIALIZER,
+  .mutex = SPINLOCK_INITIALIZER,
   .next = &main_arena,
   .attached_threads = 1
 };
