@@ -115,7 +115,7 @@ int __malloc_initialized = -1;
 
 #define arena_lock(ptr, size) do {					      \
       if (ptr && !arena_is_corrupt (ptr))				      \
-        (void) mutex_lock (&ptr->mutex);				      \
+        (void) spin_lock (&ptr->mutex);				      \
       else								      \
         ptr = arena_get2 ((size), NULL);				      \
   } while (0)
@@ -236,7 +236,7 @@ ptmalloc_lock_all (void)
     }
   for (ar_ptr = &main_arena;; )
     {
-      (void) mutex_lock (&ar_ptr->mutex);
+      (void) spin_lock (&ar_ptr->mutex);
       ar_ptr = ar_ptr->next;
       if (ar_ptr == &main_arena)
         break;
@@ -274,7 +274,7 @@ ptmalloc_unlock_all (void)
   __free_hook = save_free_hook;
   for (ar_ptr = &main_arena;; )
     {
-      (void) mutex_unlock (&ar_ptr->mutex);
+      (void) spin_unlock (&ar_ptr->mutex);
       ar_ptr = ar_ptr->next;
       if (ar_ptr == &main_arena)
         break;
@@ -833,7 +833,7 @@ _int_new_arena (size_t size)
      to make it less likely that reused_arena picks this new arena,
      but this could result in a deadlock with ptmalloc_lock_all.  */
 
-  (void) mutex_lock (&a->mutex);
+  (void) spin_lock (&a->mutex);
 
   return a;
 }
@@ -864,7 +864,7 @@ get_free_list (void)
       if (result != NULL)
         {
           LIBC_PROBE (memory_arena_reuse_free_list, 1, result);
-          (void) mutex_lock (&result->mutex);
+          (void) spin_lock (&result->mutex);
 	  thread_arena = result;
         }
     }
@@ -918,7 +918,7 @@ reused_arena (mstate avoid_arena)
 
   /* No arena available without contention.  Wait for the next in line.  */
   LIBC_PROBE (memory_arena_reuse_wait, 3, &result->mutex, result, avoid_arena);
-  (void) mutex_lock (&result->mutex);
+  (void) spin_lock (&result->mutex);
 
 out:
   /* Attach the arena to the current thread.  Note that we may have
@@ -1000,17 +1000,17 @@ arena_get_retry (mstate ar_ptr, size_t bytes)
   LIBC_PROBE (memory_arena_retry, 2, bytes, ar_ptr);
   if (ar_ptr != &main_arena)
     {
-      (void) mutex_unlock (&ar_ptr->mutex);
+      (void) spin_unlock (&ar_ptr->mutex);
       /* Don't touch the main arena if it is corrupt.  */
       if (arena_is_corrupt (&main_arena))
 	return NULL;
 
       ar_ptr = &main_arena;
-      (void) mutex_lock (&ar_ptr->mutex);
+      (void) spin_lock (&ar_ptr->mutex);
     }
   else
     {
-      (void) mutex_unlock (&ar_ptr->mutex);
+      (void) spin_unlock (&ar_ptr->mutex);
       ar_ptr = arena_get2 (bytes, ar_ptr);
     }
 
