@@ -26,8 +26,8 @@ SPINLOCK_ATTR char __testandset(usr_spinlock *p, long old_val, long new_val)
 SPINLOCK_ATTR void spin_lock(usr_spinlock *lock)
 {
     long tid = syscall(__NR_gettid);
-    l_tid = (l_tid << 32) + 1;
-    while (__testandset(lock, 0, l_tid)) {
+    tid = (tid << 32) + 1;
+    while (__testandset(lock, 0, tid)) {
         cpu_relax();
     }
 }
@@ -35,8 +35,8 @@ SPINLOCK_ATTR void spin_lock(usr_spinlock *lock)
 SPINLOCK_ATTR char spin_trylock(usr_spinlock *lock)
 {
     long tid = syscall(__NR_gettid);
-    l_tid = (l_tid << 32) + 1;
-    return __testandset(lock, 0, l_tid);
+    tid = (tid << 32) + 1;
+    return __testandset(lock, 0, tid);
 }
 
 SPINLOCK_ATTR void spin_unlock(usr_spinlock *s)
