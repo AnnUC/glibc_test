@@ -109,6 +109,7 @@ int __malloc_initialized = -1;
    in the new arena. */
 
 #define arena_get(ptr, size) do { \
+      fprintf(stderr, "in arena_get\n"); \
       ptr = thread_arena;						      \
       arena_lock (ptr, size);						      \
   } while (0)
