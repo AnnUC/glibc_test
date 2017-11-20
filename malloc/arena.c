@@ -108,31 +108,35 @@ int __malloc_initialized = -1;
    is just a hint as to how much memory will be required immediately
    in the new arena. */
 
+
 #define arena_get(ptr, size) do { \
       ptr = thread_arena;						      \
       arena_lock (ptr, size);						      \
+  } while (0)
+
+#define arena_lock(ptr, size) do {                \
+      if (ptr && !arena_is_corrupt (ptr))             \
+        (void) usr_spin_lock (&ptr->mutex);             \
+      else                      \
+        ptr = arena_get2 ((size), NULL);              \
   } while (0)
 
 
 /*
 static mstate internal_function arena_get2 (size_t size, mstate avoid_arena);
 
-void arena_get(mstate ptr, size_t size) {
+#define arena_get(ptr, size) __arena_get(ptr, size)
+
+void __arena_get(mstate ptr, size_t size) {
   do { 
       ptr = thread_arena;
       arena_lock (ptr, size);
   } while (0);
 }
-*/
 
-#define arena_lock(ptr, size) do {					      \
-      if (ptr && !arena_is_corrupt (ptr))				      \
-        (void) usr_spin_lock (&ptr->mutex);				      \
-      else								      \
-        ptr = arena_get2 ((size), NULL);				      \
-  } while (0)
 
-/*
+#define arena_lock(ptr, size) arena_lock(ptr, size)                
+
 void arena_lock(mstate ptr, size_t size) {
   do {               
       if (ptr && !arena_is_corrupt (ptr))             

@@ -16,11 +16,11 @@ SPINLOCK_ATTR char __usrtestandset(usr_spinlock *p, long old_val, long new_val)
 {
     char result = 0;
     asm volatile (
-            "lock; cmpxchgq %4, %1"
+            "lock; cmpxchgq %4, %1; sete %0"
             : "=q" (result), "=m" (*p)
             : "m" (*p), "a" (old_val), "r" (new_val)
             : "memory");
-    return result;
+    return (!result);
 }
 
 SPINLOCK_ATTR void usr_spin_lock(usr_spinlock *lock)
