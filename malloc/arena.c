@@ -114,6 +114,9 @@ int __malloc_initialized = -1;
   } while (0)
 */
 
+
+static mstate internal_function arena_get2 (size_t size, mstate avoid_arena);
+
 void arena_get(mstate ptr, size_t size) {
   do { 
       ptr = thread_arena;
