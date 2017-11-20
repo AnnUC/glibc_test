@@ -118,7 +118,7 @@ void arena_get(mstate ptr, size_t size) {
   do { 
       ptr = thread_arena;
       arena_lock (ptr, size);
-  } while (0)
+  } while (0);
 }
 
 /*#define arena_lock(ptr, size) do {					      \
@@ -134,7 +134,7 @@ void arena_lock(mstate ptr, size_t size) {
         (void) usr_spin_lock (&ptr->mutex);             
       else                      
         ptr = arena_get2 ((size), NULL);              
-  } while (0)
+  } while (0);
 }
 
 /* find the heap and corresponding arena for a given ptr */
