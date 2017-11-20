@@ -114,7 +114,7 @@ int __malloc_initialized = -1;
   } while (0)
 */
 
-void arena_get(ptr, size) {
+void arena_get(mstate ptr, size_t size) {
   do { 
       ptr = thread_arena;
       arena_lock (ptr, size);
@@ -128,7 +128,7 @@ void arena_get(ptr, size) {
         ptr = arena_get2 ((size), NULL);				      \
   } while (0)*/
 
-void arena_lock(ptr, size) {
+void arena_lock(mstate ptr, size_t size) {
   do {               
       if (ptr && !arena_is_corrupt (ptr))             
         (void) usr_spin_lock (&ptr->mutex);             
