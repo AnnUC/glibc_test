@@ -108,17 +108,29 @@ int __malloc_initialized = -1;
    is just a hint as to how much memory will be required immediately
    in the new arena. */
 
-#define arena_get(ptr, size) do { \
-      fprintf(stderr, "in arena_get\n"); \
+/*#define arena_get(ptr, size) do { \
       ptr = thread_arena;						      \
       arena_lock (ptr, size);						      \
   } while (0)
+*/
 
-#define arena_lock(ptr, size) do {					      \
+void arena_get(ptr, size) do { 
+      ptr = thread_arena;
+      arena_lock (ptr, size);
+  } while (0)
+
+/*#define arena_lock(ptr, size) do {					      \
       if (ptr && !arena_is_corrupt (ptr))				      \
-        (void) spin_lock (&ptr->mutex);				      \
+        (void) usr_spin_lock (&ptr->mutex);				      \
       else								      \
         ptr = arena_get2 ((size), NULL);				      \
+  } while (0)*/
+
+void arena_lock(ptr, size) do {               
+      if (ptr && !arena_is_corrupt (ptr))             
+        (void) usr_spin_lock (&ptr->mutex);             
+      else                      
+        ptr = arena_get2 ((size), NULL);              
   } while (0)
 
 /* find the heap and corresponding arena for a given ptr */
@@ -237,7 +249,7 @@ ptmalloc_lock_all (void)
     }
   for (ar_ptr = &main_arena;; )
     {
-      (void) spin_lock (&ar_ptr->mutex);
+      (void) usr_spin_lock (&ar_ptr->mutex);
       ar_ptr = ar_ptr->next;
       if (ar_ptr == &main_arena)
         break;
@@ -275,7 +287,7 @@ ptmalloc_unlock_all (void)
   __free_hook = save_free_hook;
   for (ar_ptr = &main_arena;; )
     {
-      (void) spin_unlock (&ar_ptr->mutex);
+      (void) usr_spin_unlock (&ar_ptr->mutex);
       ar_ptr = ar_ptr->next;
       if (ar_ptr == &main_arena)
         break;
@@ -310,7 +322,7 @@ ptmalloc_unlock_all2 (void)
   free_list = NULL;
   for (ar_ptr = &main_arena;; )
     {
-      spin_init (&ar_ptr->mutex);
+      usr_spin_init (&ar_ptr->mutex);
       if (ar_ptr != save_arena)
         {
 	  /* This arena is no longer attached to any thread.  */
@@ -807,7 +819,7 @@ _int_new_arena (size_t size)
   LIBC_PROBE (memory_arena_new, 2, a, size);
   mstate replaced_arena = thread_arena;
   thread_arena = a;
-  spin_init (&a->mutex);
+  usr_spin_init (&a->mutex);
 
   (void) mutex_lock (&list_lock);
 
@@ -834,7 +846,7 @@ _int_new_arena (size_t size)
      to make it less likely that reused_arena picks this new arena,
      but this could result in a deadlock with ptmalloc_lock_all.  */
 
-  (void) spin_lock (&a->mutex);
+  (void) usr_spin_lock (&a->mutex);
 
   return a;
 }
@@ -865,7 +877,7 @@ get_free_list (void)
       if (result != NULL)
         {
           LIBC_PROBE (memory_arena_reuse_free_list, 1, result);
-          (void) spin_lock (&result->mutex);
+          (void) usr_spin_lock (&result->mutex);
 	  thread_arena = result;
         }
     }
@@ -890,7 +902,7 @@ reused_arena (mstate avoid_arena)
   result = next_to_use;
   do
     {
-      if (!arena_is_corrupt (result) && !mutex_trylock (&result->mutex))
+      if (!arena_is_corrupt (result) && !usr_spin_trylock (&result->mutex))
         goto out;
 
       /* FIXME: This is a data race, see _int_new_arena.  */
@@ -919,7 +931,7 @@ reused_arena (mstate avoid_arena)
 
   /* No arena available without contention.  Wait for the next in line.  */
   LIBC_PROBE (memory_arena_reuse_wait, 3, &result->mutex, result, avoid_arena);
-  (void) spin_lock (&result->mutex);
+  (void) usr_spin_lock (&result->mutex);
 
 out:
   /* Attach the arena to the current thread.  Note that we may have
@@ -1001,17 +1013,17 @@ arena_get_retry (mstate ar_ptr, size_t bytes)
   LIBC_PROBE (memory_arena_retry, 2, bytes, ar_ptr);
   if (ar_ptr != &main_arena)
     {
-      (void) spin_unlock (&ar_ptr->mutex);
+      (void) usr_spin_unlock (&ar_ptr->mutex);
       /* Don't touch the main arena if it is corrupt.  */
       if (arena_is_corrupt (&main_arena))
 	return NULL;
 
       ar_ptr = &main_arena;
-      (void) spin_lock (&ar_ptr->mutex);
+      (void) usr_spin_lock (&ar_ptr->mutex);
     }
   else
     {
-      (void) spin_unlock (&ar_ptr->mutex);
+      (void) usr_spin_unlock (&ar_ptr->mutex);
       ar_ptr = arena_get2 (bytes, ar_ptr);
     }
 

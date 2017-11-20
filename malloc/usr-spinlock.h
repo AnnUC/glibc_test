@@ -12,7 +12,7 @@ typedef struct {
 /* Pause instruction to prevent excess processor bus usage */
 #define cpu_relax() asm volatile("pause\n": : :"memory")
 
-SPINLOCK_ATTR char __testandset(usr_spinlock *p, long old_val, long new_val)
+SPINLOCK_ATTR char __usrtestandset(usr_spinlock *p, long old_val, long new_val)
 {
     char result = 0;
     asm volatile (
@@ -23,23 +23,23 @@ SPINLOCK_ATTR char __testandset(usr_spinlock *p, long old_val, long new_val)
     return result;
 }
 
-SPINLOCK_ATTR void spin_lock(usr_spinlock *lock)
+SPINLOCK_ATTR void usr_spin_lock(usr_spinlock *lock)
 {
     long tid = syscall(__NR_gettid);
     tid = (tid << 32) + 1;
-    while (__testandset(lock, 0, tid)) {
+    while (__usrtestandset(lock, 0, tid)) {
         cpu_relax();
     }
 }
 
-SPINLOCK_ATTR char spin_trylock(usr_spinlock *lock)
+SPINLOCK_ATTR char usr_spin_trylock(usr_spinlock *lock)
 {
     long tid = syscall(__NR_gettid);
     tid = (tid << 32) + 1;
-    return __testandset(lock, 0, tid);
+    return __usrtestandset(lock, 0, tid);
 }
 
-SPINLOCK_ATTR void spin_unlock(usr_spinlock *s)
+SPINLOCK_ATTR void usr_spin_unlock(usr_spinlock *s)
 {
     long new_val = 0;
     asm volatile ("xchgq %0,%1"
@@ -48,9 +48,9 @@ SPINLOCK_ATTR void spin_unlock(usr_spinlock *s)
                 :"memory");
 }
 
-SPINLOCK_ATTR void spin_init(usr_spinlock *s)
+SPINLOCK_ATTR void usr_spin_init(usr_spinlock *s)
 {
-    spin_unlock(s); 
+    usr_spin_unlock(s); 
 }
 
-#define SPINLOCK_INITIALIZER { 0 }
+#define USR_SPINLOCK_INITIALIZER { 0 }
