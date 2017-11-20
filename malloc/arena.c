@@ -114,10 +114,12 @@ int __malloc_initialized = -1;
   } while (0)
 */
 
-void arena_get(ptr, size) do { 
+void arena_get(ptr, size) {
+  do { 
       ptr = thread_arena;
       arena_lock (ptr, size);
   } while (0)
+}
 
 /*#define arena_lock(ptr, size) do {					      \
       if (ptr && !arena_is_corrupt (ptr))				      \
@@ -126,12 +128,14 @@ void arena_get(ptr, size) do {
         ptr = arena_get2 ((size), NULL);				      \
   } while (0)*/
 
-void arena_lock(ptr, size) do {               
+void arena_lock(ptr, size) {
+  do {               
       if (ptr && !arena_is_corrupt (ptr))             
         (void) usr_spin_lock (&ptr->mutex);             
       else                      
         ptr = arena_get2 ((size), NULL);              
   } while (0)
+}
 
 /* find the heap and corresponding arena for a given ptr */
 
