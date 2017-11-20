@@ -1080,8 +1080,8 @@ static void*   malloc_atfork(size_t sz, const void *caller);
 static void      free_atfork(void* mem, const void *caller);
 #endif
 
-void arena_get(mstate ptr, size_t size);
-void arena_lock(mstate ptr, size_t size);
+//void arena_get(mstate ptr, size_t size);
+//void arena_lock(mstate ptr, size_t size);
 
 
 /* ------------------ MMAP support ------------------  */
