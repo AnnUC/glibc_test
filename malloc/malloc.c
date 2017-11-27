@@ -1082,10 +1082,12 @@ static void      free_atfork(void* mem, const void *caller);
 #endif
 
 
-
+/*
 static mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
 int is_resgistered_heap_info = 0;
 int *register_heap_info_flag;
+#define NUM_HEAP_INFO_FLAG = 100
+*/
 
 /* ------------------ MMAP support ------------------  */
 
@@ -2917,13 +2919,13 @@ mremap_chunk (mchunkptr p, size_t new_size)
 void *
 __libc_malloc (size_t bytes)
 {
-
+/*
   (void) mutex_lock (&register_heap_info_lock);
   if (is_resgistered_heap_info == 0) {
      //register_heap_info_flag = (int *) (MMAP (0, 4, PROT_READ | PROT_WRITE, 0));
   }
   (void) mutex_unlock (&register_heap_info_lock);
-
+*/
   mstate ar_ptr;
   void *victim;
 
