@@ -738,7 +738,7 @@ heap_trim (heap_info *heap, size_t pad)
       arena_mem -= heap->size;
       LIBC_PROBE (memory_heap_free, 2, heap, heap->size);
 
-      register_heap_info (0, ar_ptr, heap, -1, -1);
+      register_heap_info (0, ar_ptr, heap, -1, int*(-1));
 
       heap = prev_heap;
       if (!prev_inuse (p)) /* consolidate backward */

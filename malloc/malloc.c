@@ -2421,7 +2421,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
       else if ((heap = new_heap (nb + (MINSIZE + sizeof (*heap)), mp_.top_pad)))
         {
 
-          register_heap_info (0, av, heap, HEAP_MAX_SIZE, -1);
+          register_heap_info (0, av, heap, HEAP_MAX_SIZE, int*(-1));
 
           /* Use a newly allocated heap.  */
           heap->ar_ptr = av;
@@ -2530,7 +2530,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
                   brk = mbrk;
                   snd_brk = brk + size;
 
-                  register_heap_info (0, av, mbrk, size, -1);
+                  register_heap_info (0, av, mbrk, size, int*(-1));
                   /*
                      Record that we no longer have a contiguous sbrk region.
                      After the first time mmap is used as backup, we do not
@@ -2550,7 +2550,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
             register_heap_info (0, av, mp_.sbrk_base, size, flag_loc);
           }
           av->system_mem += size;
-          register_heap_info (0, av, mp_.sbrk_base, size, -1);
+          register_heap_info (0, av, mp_.sbrk_base, size, int*(-1));
           /*
              If MORECORE extends previous space, we can likewise extend top size.
            */
