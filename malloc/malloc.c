@@ -3361,7 +3361,6 @@ _int_malloc (mstate av, size_t bytes)
 
   const char *errstr = NULL;
 
-  if
   /*
      Convert request size to internal form by adding SIZE_SZ bytes
      overhead plus possibly more to obtain necessary alignment and/or
