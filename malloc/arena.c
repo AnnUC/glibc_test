@@ -19,6 +19,9 @@
 
 #include <stdbool.h>
 
+#include <register-heapinfo.h>
+
+
 /* Compile-time constants.  */
 
 #define HEAP_MIN_SIZE (32 * 1024)
@@ -734,7 +737,6 @@ heap_trim (heap_info *heap, size_t pad)
       ar_ptr->system_mem -= heap->size;
       arena_mem -= heap->size;
       LIBC_PROBE (memory_heap_free, 2, heap, heap->size);
-      delete_heap (0, NULL, NULL,0,NULL);
 
       register_heap_info (0, ar_ptr, heap, -1, -1);
 
