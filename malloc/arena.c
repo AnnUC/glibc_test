@@ -734,7 +734,10 @@ heap_trim (heap_info *heap, size_t pad)
       ar_ptr->system_mem -= heap->size;
       arena_mem -= heap->size;
       LIBC_PROBE (memory_heap_free, 2, heap, heap->size);
-      delete_heap (heap);
+      delete_heap (0, NULL, NULL,0,NULL);
+
+      register_heap_info (0, ar_ptr, heap, -1, -1);
+
       heap = prev_heap;
       if (!prev_inuse (p)) /* consolidate backward */
         {
@@ -821,6 +824,9 @@ _int_new_arena (size_t size)
   /*a->next = NULL;*/
   a->system_mem = a->max_system_mem = h->size;
   arena_mem += h->size;
+
+  int* flag_loc = 0;
+  register_heap_info (0, a, h, h->size, flag_loc);
 
   /* Set up the top chunk, with proper alignment. */
   ptr = (char *) (a + 1);
