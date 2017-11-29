@@ -1083,7 +1083,7 @@ static void      free_atfork(void* mem, const void *caller);
 
 
 
-static mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
+//static mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
 int is_resgistered_heap_info = 0; 
 int* register_heap_info_flag;
 #define NUM_HEAP_INFO_FLAG = 1024;
