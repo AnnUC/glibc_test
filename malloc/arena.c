@@ -19,7 +19,7 @@
 
 #include <stdbool.h>
 
-#include <register-heapinfo.h>
+//#include <register-heapinfo.h>
 
 
 /* Compile-time constants.  */

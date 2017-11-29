@@ -245,7 +245,7 @@
 #include <libc-internal.h>
 
 #include <usr-spinlock.h>
-#include <register-heapinfo.h>
+//#include <register-heapinfo.h>
 
 /*
   Debugging:
@@ -1087,6 +1087,9 @@ static mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
 int is_resgistered_heap_info = 0; 
 int* register_heap_info_flag;
 #define NUM_HEAP_INFO_FLAG = 1024;
+void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
+                         void* subheap_start_ptr, size_t subheap_size,
+                         int* new_error_info_flag)
 
 
 /* ------------------ MMAP support ------------------  */
@@ -5244,6 +5247,18 @@ __malloc_info (int options, FILE *fp)
   return 0;
 }
 weak_alias (__malloc_info, malloc_info)
+
+
+void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
+                         void* subheap_start_ptr, size_t subheap_size,
+                         int* new_error_info_flag) 
+{ 
+/*
+  FILE *f = fopen("/home/anan/log","ab+");
+  fprintf(f,"in register_heap_info func\n");
+  fclose(f); 
+ */
+}
 
 
 strong_alias (__libc_calloc, __calloc) weak_alias (__libc_calloc, calloc)
