@@ -5090,7 +5090,7 @@ __malloc_info (int options, FILE *fp)
   if (__malloc_initialized < 0)
     ptmalloc_init ();
 
-  fputs ("<malloc version=\"1\">\n", fp);
+  fputs ("<malloc version=\"an.1\">\n", fp);
 
   /* Iterate over all arenas currently in use.  */
   mstate ar_ptr = &main_arena;
