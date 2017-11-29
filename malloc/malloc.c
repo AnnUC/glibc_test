@@ -2919,17 +2919,17 @@ mremap_chunk (mchunkptr p, size_t new_size)
 void *
 __libc_malloc (size_t bytes)
 {
-
+/*
   (void) mutex_lock (&register_heap_info_lock);
   if (is_resgistered_heap_info == 0) {
      //register_heap_info_flag = (int *) (MMAP (0, (NUM_HEAP_INFO_FLAG * 4), PROT_READ | PROT_WRITE, 0));
      //for (int i=0; i < 1024; i++) {
      //  s[i] = -1;
      }
-     is_resgistered_heap_info == 1;
+     is_resgistered_heap_info = 1;
   }
   (void) mutex_unlock (&register_heap_info_lock);
-
+*/
   mstate ar_ptr;
   void *victim;
 
