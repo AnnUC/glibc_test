@@ -1089,7 +1089,7 @@ int* register_heap_info_flag;
 #define NUM_HEAP_INFO_FLAG = 1024;
 void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
-                         int* new_error_info_flag)
+                         int* new_error_info_flag);
 
 
 /* ------------------ MMAP support ------------------  */
