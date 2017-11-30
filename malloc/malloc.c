@@ -3392,6 +3392,80 @@ __libc_calloc (size_t n, size_t elem_size)
   return mem;
 }
 
+void get_faulty_address_info(faulty_address_info_t* buf, mstate av) {
+  //syscall(334, (void**)buf, av);
+  //if syscall return 1, set update_faulty_address = 1 
+}
+
+void is_in_diabled_chunk (mstate av, faulty_address_info_t faulty_address_info_buf)
+{
+
+}
+
+void resume_disabled_chunk (disabled_chunk_info_t disabled_chunk_info_node)
+{
+  //todo resume
+}
+
+void add_disabled_chunk (disabled_chunk_info_t disabled_chunk_info_node)
+{
+}
+
+void resume_all_disabled_chunks (mstate av)
+{
+  disabled_chunk_info_t p,q;
+  if (av->disabled_chunk_info_head == NULL || av->disabled_chunk_info_head->disabled_chunk_ptr == -1)
+    return;
+  resume_disabled_chunk (p);
+  disabled_chunk_ptr = -1；
+  p = av->disabled_chunk_info_head->next;
+  while (p != NULL) 
+  {
+    q = p->next;
+    resume_disabled_chunk (p);
+    free(disabled_chunk_info_node);
+    p = q;
+  }
+  faulty_address_info_head->next = NULL;
+  return;
+}
+
+void add_all_disabled_chunks (mstate av)
+{
+  //pending
+  if (av->faulty_address_info_head == NULL || av->faulty_address_info_head->vaddr == -1)
+    return;
+  faulty_address_info_t faulty_address_node = av->faulty_address_info_head;
+  while (faulty_address_node != NULL) 
+  {
+    add_disabled_chunk (faulty_address_node -> addr);
+    faulty_address_node = faulty_address_node->next;
+  }
+  return;
+}
+
+void clear_faulty_address_info(faulty_address_info_t faulty_address_info_head) {
+  faulty_address_info_t p,q;
+  if (faulty_address_info_head == NULL || faulty_address_info_head->vaddr == -1)
+    return;
+  vaddr = -1;
+  p = faulty_address_info_head->next;
+  while (p!=NULL) {
+    q = p->next;
+    free(p);
+    p = q;
+  }
+  faulty_address_info_head->next = NULL;
+  return;
+}
+
+#define NUM_FAULTY_ADDRESS_INFO 1024
+void init_faulty_chunk_info(mstate a) {
+ a->faulty_address_info_head = (faulty_address_info_t) (MMAP (0, (NUM_FAULTY_ADDRESS_INFO * sizeof(faulty_address_info)), PROT_READ | PROT_WRITE, 0));
+ a->update_faulty_address = 0;
+ a->disabled_chunk_info_head = (disabled_chunk_info_t) (MMAP (0, (NUM_FAULTY_ADDRESS_INFO * sizeof(disabled_chunk_info)), PROT_READ | PROT_WRITE, 0));
+}
+
 /*
    ------------------------------ malloc ------------------------------
  */
@@ -3439,6 +3513,45 @@ _int_malloc (mstate av, size_t bytes)
 	alloc_perturb (p, bytes);
       return p;
     }
+
+
+
+/* 
+   check the arena update_faulty_address flag: START 
+  // TODO: initialize the buffer
+  if (av->update_faulty_address == 1) 
+  {
+    // 1. clean faulty_address_info_buf  
+    clear_faulty_address_info(av->faulty_address_info_head);
+
+    // 2. get faulty address info
+    get_faulty_address_info (&(av->faulty_address_info_head));
+    
+    // TODO: check if the allocated chunk are using the faulty cell
+    // currently, our assumption is that there is no new faulty cell
+
+    // 3. use faulty address info to update disabled chunk
+    // 3.1 resume all disabled chunks
+    resume_all_disabled_chunks (av);
+    // 3.2 add disabled chunk with faulty address info
+    add_all_disabled_chunks (av);
+
+    faulty_address_info_t faulty_address_node = av->faulty_address_info_head;
+    while (faulty_address_node != NULL) 
+    {
+      if ( is_in_diabled_chunk (av, faulty_address_node->addr) ) 
+      {
+
+      } esle
+      {
+
+      }
+      faulty_address_node = faulty_address_node->next;
+    }
+
+    // TODO: need to think about more efficient implementation
+
+  } */
 
   /*
      If the size qualifies as a fastbin, first check corresponding bin.

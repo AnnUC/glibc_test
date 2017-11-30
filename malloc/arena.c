@@ -1024,6 +1024,9 @@ arena_get2 (size_t size, mstate avoid_arena)
           if (catomic_compare_and_exchange_bool_acq (&narenas, n + 1, n))
             goto repeat;
           a = _int_new_arena (size);
+          init_faulty_address_info (a);
+          //new arena
+
 	  if (__glibc_unlikely (a == NULL))
             catomic_decrement (&narenas);
         }
