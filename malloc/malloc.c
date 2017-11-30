@@ -2945,7 +2945,7 @@ __libc_malloc (size_t bytes)
   (void) mutex_lock (&register_heap_info_lock);
 
   if (is_resgistered_heap_info == 0) {
-     //register_heap_info_file = fopen("/home/anan/log","ab+");
+     register_heap_info_file = fopen("/home/anan/log","ab+");
      register_heap_info_flag = (int *) (MMAP (0, (NUM_HEAP_INFO_FLAG * 4), PROT_READ | PROT_WRITE, 0));
      for (int i=0; i < 1024; i++) {
        register_heap_info_flag[i] = -1;
@@ -5273,7 +5273,7 @@ void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
                          int* new_error_info_flag) 
 { 
-  //fprintf(register_heap_info_file,"in register_heap_info func\n");
+  fprintf(register_heap_info_file,"in register_heap_info func\n");
   
   //syscall(332, mem_allocator_identifier, arena_start_ptr, subheap_start_ptr, subheap_size, new_error_info_flag);
 }
