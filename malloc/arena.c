@@ -19,7 +19,7 @@
 
 #include <stdbool.h>
 
-//#include <register-heapinfo.h>
+#include <register-heapinfo.h>
 
 
 /* Compile-time constants.  */
@@ -738,7 +738,9 @@ heap_trim (heap_info *heap, size_t pad)
       arena_mem -= heap->size;
       LIBC_PROBE (memory_heap_free, 2, heap, heap->size);
 
+      (void) mutex_lock (&register_heap_info_lock);
       register_heap_info (0, ar_ptr, heap, -1, (int*)(-1));
+      (void) mutex_unlock (&register_heap_info_lock);
 
       heap = prev_heap;
       if (!prev_inuse (p)) /* consolidate backward */
@@ -827,8 +829,12 @@ _int_new_arena (size_t size)
   a->system_mem = a->max_system_mem = h->size;
   arena_mem += h->size;
 
-  int* flag_loc = 0;
-  register_heap_info (0, a, h, h->size, flag_loc);
+  (void) mutex_lock (&register_heap_info_lock);
+  while (register_heap_info_flag[flag_counter] != -1)
+    flag_counter++；
+  register_heap_info (0, a, h, h->size, &register_heap_info_flag[flag_counter]);
+  flag_counter++；
+  (void) mutex_unlock (&register_heap_info_lock);     
 
   /* Set up the top chunk, with proper alignment. */
   ptr = (char *) (a + 1);

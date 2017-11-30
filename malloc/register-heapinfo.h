@@ -7,15 +7,18 @@ if subheap_size = -1, delete the subheap
 
 */
 
-void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
+extern static mutex_t register_heap_info_lock;
+extern int* register_heap_info_flag;
+extern int flag_counter;
+/*void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
                          int* new_error_info_flag) 
 { 
-/*
+
   FILE *f = fopen("/home/anan/log","ab+");
   fprintf(f,"in register_heap_info func\n");
   fclose(f); 
- */
-}
 
+}
+ */
 #endif
