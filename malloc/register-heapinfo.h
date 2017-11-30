@@ -7,7 +7,7 @@ if subheap_size = -1, delete the subheap
 
 */
 
-extern static mutex_t register_heap_info_lock;
+extern mutex_t register_heap_info_lock;
 extern int* register_heap_info_flag;
 extern int flag_counter;
 /*void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,

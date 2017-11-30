@@ -1083,11 +1083,11 @@ static void      free_atfork(void* mem, const void *caller);
 
 
 
-static mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
+mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
 int is_resgistered_heap_info = 0; 
 int* register_heap_info_flag;
 int flag_counter = 0;
-#define NUM_HEAP_INFO_FLAG = 1024;
+#define NUM_HEAP_INFO_FLAG 1024;
 void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
                          int* new_error_info_flag);
@@ -2566,9 +2566,9 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
             (void) mutex_lock (&register_heap_info_lock);
             while (register_heap_info_flag[flag_counter] != -1)
-              flag_counter++；
+              flag_counter++;
             register_heap_info (0, av, mp_.sbrk_base, size, &register_heap_info_flag[flag_counter]);
-            flag_counter++；
+            flag_counter++;
             (void) mutex_unlock (&register_heap_info_lock);
 
           }
@@ -2945,7 +2945,7 @@ __libc_malloc (size_t bytes)
   if (is_resgistered_heap_info == 0) {
      register_heap_info_flag = (int *) (MMAP (0, (NUM_HEAP_INFO_FLAG * 4), PROT_READ | PROT_WRITE, 0));
      for (int i=0; i < 1024; i++) {
-       s[i] = -1;
+       register_heap_info_flag[i] = -1;
      }
      is_resgistered_heap_info = 1;
   }
