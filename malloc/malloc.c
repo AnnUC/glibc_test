@@ -1084,6 +1084,7 @@ static void      free_atfork(void* mem, const void *caller);
 
 
 mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
+FILE *register_heap_info_file;
 int is_resgistered_heap_info = 0; 
 int* register_heap_info_flag;
 int flag_counter = 0;
@@ -2942,7 +2943,7 @@ __libc_malloc (size_t bytes)
   (void) mutex_lock (&register_heap_info_lock);
 
   if (is_resgistered_heap_info == 0) {
-     FILE *f = fopen("/home/anan/log","ab+");
+     register_heap_info_file = fopen("/home/anan/log","ab+");
      register_heap_info_flag = (int *) (MMAP (0, (NUM_HEAP_INFO_FLAG * 4), PROT_READ | PROT_WRITE, 0));
      for (int i=0; i < 1024; i++) {
        register_heap_info_flag[i] = -1;
@@ -5272,7 +5273,8 @@ void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
 { 
 
   
-  fprintf(f,"in register_heap_info func\n"); 
+  fprintf(register_heap_info_file,"in register_heap_info func\n");
+ 
 }
 
 
