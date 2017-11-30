@@ -2432,7 +2432,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
       else if ((heap = new_heap (nb + (MINSIZE + sizeof (*heap)), mp_.top_pad)))
         {
 
-          (void) mutex_lock (&register_heap_info_lock);
+          (void) mutex_unlock (&register_heap_info_lock);
           register_heap_info (0, av, heap, HEAP_MAX_SIZE, (int*)(-1));
           (void) mutex_unlock (&register_heap_info_lock);
 
