@@ -1233,13 +1233,13 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 typedef struct _disabled_chunk_info
 {
   mchunkptr disabled_chunk_ptr;
-  _disabled_chunk_info * next;
+  struct _disabled_chunk_info * next;
 } disabled_chunk_info;
 typedef disabled_chunk_info *disabled_chunk_info_t;
 
-struct _faulty_address_info {
+typedef struct _faulty_address_info {
   size_t vaddr; // the virtual address of weak cell
-  faulty_address_info* next;
+  struct _faulty_address_info* next;
 } faulty_address_info;
 typedef faulty_address_info *faulty_address_info_t;
 
