@@ -1086,7 +1086,7 @@ static void      free_atfork(void* mem, const void *caller);
 
 
 mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
-//FILE *register_heap_info_file;
+FILE *register_heap_info_file;
 int is_resgistered_heap_info = 0; 
 int* register_heap_info_flag;
 int flag_counter = 0;
@@ -5273,7 +5273,7 @@ void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
                          int* new_error_info_flag) 
 { 
-  //fprintf(register_heap_info_file,"in register_heap_info func\n");
+  fprintf(register_heap_info_file,"in register_heap_info func\n");
   
   //syscall(332, mem_allocator_identifier, arena_start_ptr, subheap_start_ptr, subheap_size, new_error_info_flag);
 }
