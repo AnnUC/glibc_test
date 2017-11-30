@@ -247,6 +247,8 @@
 #include <libc-internal.h>
 
 #include <usr-spinlock.h>
+#include <paths.h>
+
 //#include <register-heapinfo.h>
 
 /*
