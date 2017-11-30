@@ -830,10 +830,12 @@ _int_new_arena (size_t size)
   arena_mem += h->size;
 
   (void) mutex_lock (&register_heap_info_lock);
-  while (register_heap_info_flag[flag_counter] != -1)
+  if (flag_counter < NUM_HEAP_INFO_FLAG) {
+    while (register_heap_info_flag[flag_counter] != -1)
+      flag_counter++;
+    register_heap_info (0, a, h, h->size, &register_heap_info_flag[flag_counter]);
     flag_counter++;
-  register_heap_info (0, a, h, h->size, &register_heap_info_flag[flag_counter]);
-  flag_counter++;
+  }
   (void) mutex_unlock (&register_heap_info_lock);     
 
   /* Set up the top chunk, with proper alignment. */
