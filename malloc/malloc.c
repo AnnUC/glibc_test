@@ -1087,7 +1087,7 @@ static void      free_atfork(void* mem, const void *caller);
 
 typedef struct _heap_info_flag {
   void* arena_start_ptr;
-  int *flag;
+  int flag;
 } heap_info_flag;
 
 mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
@@ -1095,11 +1095,7 @@ int is_resgistered_heap_info = 0;
 heap_info_flag* register_heap_info_flag;
 int flag_counter = 0;
 #define NUM_HEAP_INFO_FLAG 1024
-void add_flag_counter() {
-  flag_counter ++;
-  if (flag_counter >= NUM_HEAP_INFO_FLAG)
-    flag_counter -= NUM_HEAP_INFO_FLAG;
-}
+
 void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
                          int* new_error_info_flag);
@@ -2307,6 +2303,12 @@ do_check_malloc_state (mstate av)
 #include "hooks.c"
 
 
+void add_flag_counter() {
+  flag_counter ++;
+  if (flag_counter >= NUM_HEAP_INFO_FLAG)
+    flag_counter -= NUM_HEAP_INFO_FLAG;
+}
+
 /* ----------- Routines dealing with system allocation -------------- */
 
 /*
@@ -2603,11 +2605,11 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
             (void) mutex_lock (&register_heap_info_lock);
             if (flag_counter < NUM_HEAP_INFO_FLAG) {
               int counter_tmp = (flag_counter+NUM_HEAP_INFO_FLAG-1)%NUM_HEAP_INFO_FLAG;
-              while (register_heap_info_flag[flag_counter].flag != (int*)-1 && flag_counter != counter_tmp) {
+              while (register_heap_info_flag[flag_counter].flag != -1 && flag_counter != counter_tmp) {
                 add_flag_counter();
               }
-              if(register_heap_info_flag[flag_counter].flag == (int*)-1) {
-                register_heap_info (0, av, mp_.sbrk_base, size, register_heap_info_flag[flag_counter].flag);
+              if(register_heap_info_flag[flag_counter].flag == -1) {
+                register_heap_info (0, av, mp_.sbrk_base, size, &(register_heap_info_flag[flag_counter].flag));
                 register_heap_info_flag[flag_counter].arena_start_ptr = (void*) a;
                 register_heap_info_flag[flag_counter].flag = 0;
                 add_flag_counter();
@@ -2990,7 +2992,7 @@ __libc_malloc (size_t bytes)
      //register_heap_info_file = fopen (_PATH_DEVNULL, "w");
      register_heap_info_flag = (heap_info_flag *) (MMAP (0, (NUM_HEAP_INFO_FLAG * sizeof(heap_info_flag)), PROT_READ | PROT_WRITE, 0));
      for (int i=0; i < NUM_HEAP_INFO_FLAG; i++) {
-       register_heap_info_flag[i].flag = (int*)-1;
+       register_heap_info_flag[i].flag = -1;
      }
      is_resgistered_heap_info = 1;
   }

@@ -840,11 +840,11 @@ _int_new_arena (size_t size)
   (void) mutex_lock (&register_heap_info_lock);
   if (flag_counter < NUM_HEAP_INFO_FLAG) {
     int counter_tmp = (flag_counter+NUM_HEAP_INFO_FLAG-1)%NUM_HEAP_INFO_FLAG;
-    while (register_heap_info_flag[flag_counter].flag != (int*)-1 && flag_counter != counter_tmp) {
+    while (register_heap_info_flag[flag_counter].flag != -1 && flag_counter != counter_tmp) {
       add_flag_counter();
     }
-    if(register_heap_info_flag[flag_counter].flag == (int*)-1) {
-      register_heap_info (0, av, mp_.sbrk_base, size, register_heap_info_flag[flag_counter].flag);
+    if(register_heap_info_flag[flag_counter].flag == -1) {
+      register_heap_info (0, a, h, h->size, &(register_heap_info_flag[flag_counter].flag));
       register_heap_info_flag[flag_counter].arena_start_ptr = (void*) a;
       register_heap_info_flag[flag_counter].flag = 0;
       add_flag_counter();
