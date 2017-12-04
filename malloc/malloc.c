@@ -246,9 +246,9 @@
 /* For ALIGN_UP et. al.  */
 #include <libc-internal.h>
 
+/* modified by Xiaoan Ding*/
 #include <usr-spinlock.h>
 
-//#include <register-heapinfo.h>
 
 /*
   Debugging:
@@ -1084,7 +1084,7 @@ static void*   malloc_atfork(size_t sz, const void *caller);
 static void      free_atfork(void* mem, const void *caller);
 #endif
 
-
+/* modified by Xiaoan Ding*/
 typedef struct _heap_info_flag {
   void* arena_start_ptr;
   int flag;
@@ -1231,6 +1231,8 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 */
 
+
+/* modified by Xiaoan Ding*/
 /*
   ---------- data structure of disabled_chunk_info & faulty_address_info ----------
 */
@@ -1764,10 +1766,12 @@ struct malloc_state
   
   /* add update_faulty_address flag, faulty_address_info_buf, disabled_chunk_info 
    update_faulty_address == 1 denotes an update in faulty address info */
-  
+
+  /* modified by Xiaoan Ding*/
+  /*  
   int update_faulty_address;
   faulty_address_info_t faulty_address_info_head;
-  disabled_chunk_info_t disabled_chunk_info_head;
+  disabled_chunk_info_t disabled_chunk_info_head;*/
 
 };
 
@@ -2302,7 +2306,7 @@ do_check_malloc_state (mstate av)
 /* ----------------- Support for debugging hooks -------------------- */
 #include "hooks.c"
 
-
+/* modified by Xiaoan Ding*/
 void add_flag_counter(void) {
   flag_counter ++;
   if (flag_counter >= NUM_HEAP_INFO_FLAG)
@@ -2471,6 +2475,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
       else if ((heap = new_heap (nb + (MINSIZE + sizeof (*heap)), mp_.top_pad)))
         {
 
+          /* modified by Xiaoan Ding*/
           (void) mutex_unlock (&register_heap_info_lock);
           register_heap_info (0, av, heap, HEAP_MAX_SIZE, (int*)(-1));
           (void) mutex_unlock (&register_heap_info_lock);
@@ -2582,6 +2587,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
                   brk = mbrk;
                   snd_brk = brk + size;
 
+                  /* modified by Xiaoan Ding*/
                   (void) mutex_lock (&register_heap_info_lock);
                   register_heap_info (0, av, mbrk, size, (int*)(-1));
                   (void) mutex_unlock (&register_heap_info_lock);
@@ -2602,6 +2608,8 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
           if (mp_.sbrk_base == 0) {
             mp_.sbrk_base = brk;
 
+            /* modified by Xiaoan Ding*/
+
             (void) mutex_lock (&register_heap_info_lock);
             if (flag_counter < NUM_HEAP_INFO_FLAG) {
               int counter_tmp = (flag_counter+NUM_HEAP_INFO_FLAG-1)%NUM_HEAP_INFO_FLAG;
@@ -2617,8 +2625,10 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
             }
             (void) mutex_unlock (&register_heap_info_lock);
           }
+
           av->system_mem += size;
 
+          /* modified by Xiaoan Ding*/
           (void) mutex_lock (&register_heap_info_lock);
           register_heap_info (0, av, mp_.sbrk_base, old_end - mp_.sbrk_base + size, (int*)(-1));
           (void) mutex_unlock (&register_heap_info_lock);
@@ -2985,6 +2995,7 @@ void *
 __libc_malloc (size_t bytes)
 {
 
+  /* modified by Xiaoan Ding*/
   //first initial
   (void) mutex_lock (&register_heap_info_lock);
 
@@ -3408,6 +3419,7 @@ __libc_calloc (size_t n, size_t elem_size)
   return mem;
 }
 
+/* modified by Xiaoan Ding*/
 void get_faulty_address_info(faulty_address_info_t* buf, mstate av) {
   //syscall(334, (void**)buf, av);
   //if syscall return 1, set update_faulty_address = 1 
@@ -5427,7 +5439,7 @@ __malloc_info (int options, FILE *fp)
 }
 weak_alias (__malloc_info, malloc_info)
 
-
+/* modified by Xiaoan Ding*/
 void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
                          int* new_error_info_flag) 

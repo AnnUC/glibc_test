@@ -740,6 +740,7 @@ heap_trim (heap_info *heap, size_t pad)
       arena_mem -= heap->size;
       LIBC_PROBE (memory_heap_free, 2, heap, heap->size);
 
+      /* modified by Xiaoan Ding*/
       //delete a sub heap
       (void) mutex_lock (&register_heap_info_lock);
       register_heap_info (0, ar_ptr, heap, -1, (int*)(-1));
@@ -839,6 +840,8 @@ _int_new_arena (size_t size)
   a->system_mem = a->max_system_mem = h->size;
   arena_mem += h->size;
 
+
+  /* modified by Xiaoan Ding*/
   (void) mutex_lock (&register_heap_info_lock);
   if (flag_counter < NUM_HEAP_INFO_FLAG) {
     int counter_tmp = (flag_counter+NUM_HEAP_INFO_FLAG-1)%NUM_HEAP_INFO_FLAG;
