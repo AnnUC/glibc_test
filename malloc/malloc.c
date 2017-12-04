@@ -2303,7 +2303,7 @@ do_check_malloc_state (mstate av)
 #include "hooks.c"
 
 
-void add_flag_counter() {
+void add_flag_counter(void) {
   flag_counter ++;
   if (flag_counter >= NUM_HEAP_INFO_FLAG)
     flag_counter -= NUM_HEAP_INFO_FLAG;
@@ -2610,7 +2610,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
               }
               if(register_heap_info_flag[flag_counter].flag == -1) {
                 register_heap_info (0, av, mp_.sbrk_base, size, &(register_heap_info_flag[flag_counter].flag));
-                register_heap_info_flag[flag_counter].arena_start_ptr = (void*) a;
+                register_heap_info_flag[flag_counter].arena_start_ptr = (void*) av;
                 register_heap_info_flag[flag_counter].flag = 0;
                 add_flag_counter();
               } 

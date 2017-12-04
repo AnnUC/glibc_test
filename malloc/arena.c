@@ -125,7 +125,7 @@ int __malloc_initialized = -1;
   } while (0)
 
 
-void add_flag_counter();
+void add_flag_counter(void);
 
 /*
 static mstate internal_function arena_get2 (size_t size, mstate avoid_arena);
