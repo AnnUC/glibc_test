@@ -1088,7 +1088,7 @@ static void      free_atfork(void* mem, const void *caller);
 typedef struct _heap_info_flag {
   void* arena_start_ptr;
   int *flag;
-} heap_info_flag
+} heap_info_flag;
 
 mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
 int is_resgistered_heap_info = 0; 
