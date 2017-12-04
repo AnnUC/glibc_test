@@ -11,5 +11,10 @@ extern mutex_t register_heap_info_lock;
 extern heap_info_flag* register_heap_info_flag;
 extern int flag_counter;
 
+void add_flag_counter() {
+  flag_counter ++;
+  if (flag_counter >= NUM_HEAP_INFO_FLAG)
+    flag_counter -= NUM_HEAP_INFO_FLAG;
+}
 
 #endif

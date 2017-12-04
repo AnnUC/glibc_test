@@ -2303,11 +2303,7 @@ do_check_malloc_state (mstate av)
 #include "hooks.c"
 
 
-void add_flag_counter() {
-  flag_counter ++;
-  if (flag_counter >= NUM_HEAP_INFO_FLAG)
-    flag_counter -= NUM_HEAP_INFO_FLAG;
-}
+
 
 /* ----------- Routines dealing with system allocation -------------- */
 
