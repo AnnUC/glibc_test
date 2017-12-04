@@ -3410,14 +3410,14 @@ void resume_disabled_chunk (disabled_chunk_info_t disabled_chunk_info_node)
 void add_disabled_chunk (disabled_chunk_info_t disabled_chunk_info_node)
 {
 }
-
+/*
 void resume_all_disabled_chunks (mstate av)
 {
   disabled_chunk_info_t p,q;
-  if (av->disabled_chunk_info_head == NULL || av->disabled_chunk_info_head->disabled_chunk_ptr == -1)
+  if (av->disabled_chunk_info_head == NULL || (av->disabled_chunk_info_head)->disabled_chunk_ptr == -1)
     return;
   resume_disabled_chunk (p);
-  disabled_chunk_ptr = -1；
+  disabled_chunk_ptr = -1;
   p = av->disabled_chunk_info_head->next;
   while (p != NULL) 
   {
@@ -3466,7 +3466,7 @@ void init_faulty_chunk_info(mstate a) {
  a->disabled_chunk_info_head = (disabled_chunk_info_t) (MMAP (0, (NUM_FAULTY_ADDRESS_INFO * sizeof(disabled_chunk_info)), PROT_READ | PROT_WRITE, 0));
 }
 
-
+*/
 
 /*
    ------------------------------ malloc ------------------------------
