@@ -1085,11 +1085,14 @@ static void      free_atfork(void* mem, const void *caller);
 #endif
 
 
+typedef struct _heap_info_flag {
+  void* arena_start_ptr;
+  int *flag;
+} heap_info_flag
 
 mutex_t register_heap_info_lock = _LIBC_LOCK_INITIALIZER;
-//FILE *register_heap_info_file;
 int is_resgistered_heap_info = 0; 
-int* register_heap_info_flag;
+heap_info_flag* register_heap_info_flag;
 int flag_counter = 0;
 #define NUM_HEAP_INFO_FLAG 1024
 void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
@@ -2594,9 +2597,9 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
             (void) mutex_lock (&register_heap_info_lock);
             if (flag_counter < NUM_HEAP_INFO_FLAG) {
-              while (register_heap_info_flag[flag_counter] != -1)
+              while (register_heap_info_flag[flag_counter].flag != -1)
                 flag_counter++;
-              register_heap_info (0, av, mp_.sbrk_base, size, &register_heap_info_flag[flag_counter]);
+              register_heap_info (0, av, mp_.sbrk_base, size, register_heap_info_flag[flag_counter].flag);
               flag_counter++;
             }
             (void) mutex_unlock (&register_heap_info_lock);
@@ -2970,13 +2973,14 @@ void *
 __libc_malloc (size_t bytes)
 {
 
+  //first initial
   (void) mutex_lock (&register_heap_info_lock);
 
   if (is_resgistered_heap_info == 0) {
      //register_heap_info_file = fopen (_PATH_DEVNULL, "w");
-     register_heap_info_flag = (int *) (MMAP (0, (NUM_HEAP_INFO_FLAG * 4), PROT_READ | PROT_WRITE, 0));
+     register_heap_info_flag = (heap_info_flag *) (MMAP (0, (NUM_HEAP_INFO_FLAG * sizeof(heap_info_flag)), PROT_READ | PROT_WRITE, 0));
      for (int i=0; i < 1024; i++) {
-       register_heap_info_flag[i] = -1;
+       register_heap_info_flag[i].flag = -1;
      }
      is_resgistered_heap_info = 1;
   }
@@ -3472,12 +3476,9 @@ void init_faulty_chunk_info(mstate a) {
    ------------------------------ malloc ------------------------------
  */
 
-int __malloc_info (int options, FILE *fp);
 static void *
 _int_malloc (mstate av, size_t bytes)
 {
-  FILE *fp = fopen("/home/anan/log","w");
-  __malloc_info (0, fp);
 
   INTERNAL_SIZE_T nb;               /* normalized request size */
   unsigned int idx;                 /* associated bin index */
@@ -5419,9 +5420,7 @@ void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
                          int* new_error_info_flag) 
 { 
-  //fprintf(register_heap_info_file,"in register_heap_info func\n");
-  
-  //syscall(332, mem_allocator_identifier, arena_start_ptr, subheap_start_ptr, subheap_size, new_error_info_flag);
+  syscall(332, mem_allocator_identifier, arena_start_ptr, subheap_start_ptr, subheap_size, new_error_info_flag);
 }
 
 

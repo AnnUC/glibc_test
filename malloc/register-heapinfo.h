@@ -8,7 +8,8 @@ if subheap_size = -1, delete the subheap
 */
 
 extern mutex_t register_heap_info_lock;
-extern int* register_heap_info_flag;
+extern heap_info_flag* register_heap_info_flag;
 extern int flag_counter;
+
 
 #endif
