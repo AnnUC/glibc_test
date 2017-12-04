@@ -3466,6 +3466,8 @@ void init_faulty_chunk_info(mstate a) {
  a->disabled_chunk_info_head = (disabled_chunk_info_t) (MMAP (0, (NUM_FAULTY_ADDRESS_INFO * sizeof(disabled_chunk_info)), PROT_READ | PROT_WRITE, 0));
 }
 
+
+
 /*
    ------------------------------ malloc ------------------------------
  */
@@ -3513,7 +3515,6 @@ _int_malloc (mstate av, size_t bytes)
 	alloc_perturb (p, bytes);
       return p;
     }
-
 
 
 /* 
