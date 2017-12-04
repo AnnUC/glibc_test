@@ -125,6 +125,12 @@ int __malloc_initialized = -1;
   } while (0)
 
 
+void add_flag_counter() {
+  flag_counter ++;
+  if (flag_counter >= NUM_HEAP_INFO_FLAG)
+    flag_counter -= NUM_HEAP_INFO_FLAG;
+}
+
 /*
 static mstate internal_function arena_get2 (size_t size, mstate avoid_arena);
 
