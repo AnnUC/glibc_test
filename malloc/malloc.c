@@ -5432,7 +5432,7 @@ void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
                          void* subheap_start_ptr, size_t subheap_size,
                          int* new_error_info_flag) 
 { 
-  syscall(332, mem_allocator_identifier, arena_start_ptr, subheap_start_ptr, subheap_size, new_error_info_flag);
+  //syscall(332, mem_allocator_identifier, arena_start_ptr, subheap_start_ptr, subheap_size, new_error_info_flag);
 }
 
 
