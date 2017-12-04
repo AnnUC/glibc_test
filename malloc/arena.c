@@ -738,14 +738,16 @@ heap_trim (heap_info *heap, size_t pad)
       arena_mem -= heap->size;
       LIBC_PROBE (memory_heap_free, 2, heap, heap->size);
 
+      //delete a sub heap
       (void) mutex_lock (&register_heap_info_lock);
       register_heap_info (0, ar_ptr, heap, -1, (int*)(-1));
-      //can be optimized
+      /*
+      seems like we can not delete an arena
       for (int i=0; i < NUM_HEAP_INFO_FLAG; i++) {
-        if (register_heap_info_flag[i].arena_start_ptr == ar_ptr) {
+        if (register_heap_info_flag[i].arena_start_ptr == (void*)ar_ptr) {
           register_heap_info_flag[i].flag = (int*)-1;
         }
-      }
+      }*/
       (void) mutex_unlock (&register_heap_info_lock);
 
       heap = prev_heap;
@@ -837,10 +839,16 @@ _int_new_arena (size_t size)
 
   (void) mutex_lock (&register_heap_info_lock);
   if (flag_counter < NUM_HEAP_INFO_FLAG) {
-    while (register_heap_info_flag[flag_counter].flag != (int*)-1)
-      flag_counter++;
-    register_heap_info (0, a, h, h->size, register_heap_info_flag[flag_counter].flag);
-    flag_counter++;
+    int counter_tmp = (flag_counter+NUM_HEAP_INFO_FLAG-1)%NUM_HEAP_INFO_FLAG;
+    while (register_heap_info_flag[flag_counter].flag != (int*)-1 && flag_counter != counter_tmp) {
+      add_flag_counter();
+    }
+    if(register_heap_info_flag[flag_counter].flag == (int*)-1) {
+      register_heap_info (0, av, mp_.sbrk_base, size, register_heap_info_flag[flag_counter].flag);
+      register_heap_info_flag[flag_counter].arena_start_ptr = (void*) a;
+      register_heap_info_flag[flag_counter].flag = 0;
+      add_flag_counter();
+    } 
   }
   (void) mutex_unlock (&register_heap_info_lock);     
 
