@@ -3472,6 +3472,7 @@ void init_faulty_chunk_info(mstate a) {
    ------------------------------ malloc ------------------------------
  */
 
+int __malloc_info (int options, FILE *fp);
 static void *
 _int_malloc (mstate av, size_t bytes)
 {
