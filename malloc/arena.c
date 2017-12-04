@@ -743,7 +743,7 @@ heap_trim (heap_info *heap, size_t pad)
       //can be optimized
       for (int i=0; i < NUM_HEAP_INFO_FLAG; i++) {
         if (register_heap_info_flag[i].arena_start_ptr == ar_ptr) {
-          register_heap_info_flag[i].flag = -1;
+          register_heap_info_flag[i].flag = (int*)-1;
         }
       }
       (void) mutex_unlock (&register_heap_info_lock);
@@ -837,7 +837,7 @@ _int_new_arena (size_t size)
 
   (void) mutex_lock (&register_heap_info_lock);
   if (flag_counter < NUM_HEAP_INFO_FLAG) {
-    while (register_heap_info_flag[flag_counter].flag != -1)
+    while (register_heap_info_flag[flag_counter].flag != (int*)-1)
       flag_counter++;
     register_heap_info (0, a, h, h->size, register_heap_info_flag[flag_counter].flag);
     flag_counter++;

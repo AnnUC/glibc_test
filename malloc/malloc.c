@@ -2597,7 +2597,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
             (void) mutex_lock (&register_heap_info_lock);
             if (flag_counter < NUM_HEAP_INFO_FLAG) {
-              while (register_heap_info_flag[flag_counter].flag != -1)
+              while (register_heap_info_flag[flag_counter].flag != (int*)-1)
                 flag_counter++;
               register_heap_info (0, av, mp_.sbrk_base, size, register_heap_info_flag[flag_counter].flag);
               flag_counter++;
@@ -2980,7 +2980,7 @@ __libc_malloc (size_t bytes)
      //register_heap_info_file = fopen (_PATH_DEVNULL, "w");
      register_heap_info_flag = (heap_info_flag *) (MMAP (0, (NUM_HEAP_INFO_FLAG * sizeof(heap_info_flag)), PROT_READ | PROT_WRITE, 0));
      for (int i=0; i < 1024; i++) {
-       register_heap_info_flag[i].flag = -1;
+       register_heap_info_flag[i].flag = (int*)-1;
      }
      is_resgistered_heap_info = 1;
   }
