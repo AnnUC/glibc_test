@@ -3475,6 +3475,9 @@ void init_faulty_chunk_info(mstate a) {
 static void *
 _int_malloc (mstate av, size_t bytes)
 {
+  FILE *p = fopen("/home/anan/log","w")
+  __malloc_info (0, fp);
+
   INTERNAL_SIZE_T nb;               /* normalized request size */
   unsigned int idx;                 /* associated bin index */
   mbinptr bin;                      /* associated bin */
