@@ -2992,7 +2992,7 @@ mremap_chunk (mchunkptr p, size_t new_size)
 /*------------------------ Public wrappers. --------------------------------*/
 
 // modified by Xiaoan
-int count_to_trigger_traverse = 0;
+//int count_to_trigger_traverse = 0;
 
 void *
 __libc_malloc (size_t bytes)
@@ -3011,7 +3011,7 @@ __libc_malloc (size_t bytes)
      is_resgistered_heap_info = 1;
   }
 
-  count_to_trigger_traverse++;
+  //count_to_trigger_traverse++;
   
   (void) mutex_unlock (&register_heap_info_lock);
 
@@ -3024,11 +3024,12 @@ __libc_malloc (size_t bytes)
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
   arena_get (ar_ptr, bytes);
-
+/*
   if (count_to_trigger_traverse == 2) {
     syscall(336, ar_ptr, 0, (void*) 0);
   }
-  
+  */
+
   victim = _int_malloc (ar_ptr, bytes);
   /* Retry with another arena only if we were able to find a usable arena
      before.  */
