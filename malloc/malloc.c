@@ -2991,6 +2991,9 @@ mremap_chunk (mchunkptr p, size_t new_size)
 
 /*------------------------ Public wrappers. --------------------------------*/
 
+// modified by Xiaoan
+int count_to_trigger_traverse = 0;
+
 void *
 __libc_malloc (size_t bytes)
 {
@@ -3006,6 +3009,11 @@ __libc_malloc (size_t bytes)
        register_heap_info_flag[i].flag = -1;
      }
      is_resgistered_heap_info = 1;
+  }
+
+  count_to_trigger_traverse++;
+  if (count_to_trigger_traverse == 2) {
+    syscall(336, ar_ptr, 0, (void*) 0);
   }
   (void) mutex_unlock (&register_heap_info_lock);
 
