@@ -3012,9 +3012,7 @@ __libc_malloc (size_t bytes)
   }
 
   count_to_trigger_traverse++;
-  if (count_to_trigger_traverse == 2) {
-    syscall(336, ar_ptr, 0, (void*) 0);
-  }
+  
   (void) mutex_unlock (&register_heap_info_lock);
 
   mstate ar_ptr;
@@ -3027,6 +3025,10 @@ __libc_malloc (size_t bytes)
 
   arena_get (ar_ptr, bytes);
 
+  if (count_to_trigger_traverse == 2) {
+    syscall(336, ar_ptr, 0, (void*) 0);
+  }
+  
   victim = _int_malloc (ar_ptr, bytes);
   /* Retry with another arena only if we were able to find a usable arena
      before.  */
