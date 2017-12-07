@@ -1851,6 +1851,7 @@ static INTERNAL_SIZE_T global_max_fast;
 static void
 malloc_init_state (mstate av)
 {
+  //modified by xiaoan, reserve_header!
   int i;
   mbinptr bin;
 
@@ -2475,6 +2476,8 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
       else if ((heap = new_heap (nb + (MINSIZE + sizeof (*heap)), mp_.top_pad)))
         {
 
+          //need to reserver header
+
           /* modified by Xiaoan Ding*/
           (void) mutex_unlock (&register_heap_info_lock);
           register_heap_info (0, av, heap, HEAP_MAX_SIZE, (int*)(-1));
@@ -2617,7 +2620,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
                 add_flag_counter();
               }
               if(register_heap_info_flag[flag_counter].flag == -1) {
-                register_heap_info (0, av, mp_.sbrk_base, size, &(register_heap_info_flag[flag_counter].flag));
+                register_heap_info (0, av, av, size, &(register_heap_info_flag[flag_counter].flag));
                 register_heap_info_flag[flag_counter].arena_start_ptr = (void*) av;
                 register_heap_info_flag[flag_counter].flag = 0;
                 add_flag_counter();
@@ -2630,7 +2633,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
           /* modified by Xiaoan Ding*/
           (void) mutex_lock (&register_heap_info_lock);
-          register_heap_info (0, av, mp_.sbrk_base, old_end - mp_.sbrk_base + size, (int*)(-1));
+          register_heap_info (0, av, av, (mp_.sbrk_base - (char*)av), (int*)(-1));
           (void) mutex_unlock (&register_heap_info_lock);
 
           /*
@@ -3023,8 +3026,9 @@ __libc_malloc (size_t bytes)
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
+  //if no arena available. probably generate a new arena by calling mmap to generate a subheap
   arena_get (ar_ptr, bytes);
-/*
+  /*
   if (count_to_trigger_traverse == 2) {
     syscall(336, ar_ptr, 0, (void*) 0);
   }
@@ -3068,6 +3072,7 @@ __libc_free (void *mem)
 
   p = mem2chunk (mem);
 
+//modified by xiaoan, might need register heap_info
   if (chunk_is_mmapped (p))                       /* release mmapped memory. */
     {
       /* see if the dynamic brk/mmap threshold needs adjusting */

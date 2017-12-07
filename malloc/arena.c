@@ -743,16 +743,19 @@ heap_trim (heap_info *heap, size_t pad)
       /* modified by Xiaoan Ding*/
       //delete a sub heap
       (void) mutex_lock (&register_heap_info_lock);
-      register_heap_info (0, ar_ptr, heap, -1, (int*)(-1));
-      /*
-      seems like we can not delete an arena
+      delete_heap (heap);
+      
+      register_heap_info (0, ar_ptr, heap, -1, (int*)(-1));     
+      /*  seems like we can not delete an arena
       for (int i=0; i < NUM_HEAP_INFO_FLAG; i++) {
         if (register_heap_info_flag[i].arena_start_ptr == (void*)ar_ptr) {
           register_heap_info_flag[i].flag = (int*)-1;
         }
-      }*/
+      }
+      */
       (void) mutex_unlock (&register_heap_info_lock);
 
+      
       heap = prev_heap;
       if (!prev_inuse (p)) /* consolidate backward */
         {
@@ -841,6 +844,7 @@ _int_new_arena (size_t size)
   arena_mem += h->size;
 
 
+  //need to reserver header
   /* modified by Xiaoan Ding*/
   (void) mutex_lock (&register_heap_info_lock);
   if (flag_counter < NUM_HEAP_INFO_FLAG) {
@@ -849,7 +853,7 @@ _int_new_arena (size_t size)
       add_flag_counter();
     }
     if(register_heap_info_flag[flag_counter].flag == -1) {
-      register_heap_info (0, a, h, h->size, &(register_heap_info_flag[flag_counter].flag));
+      register_heap_info (0, a, h, HEAP_MAX_SIZE, &(register_heap_info_flag[flag_counter].flag));
       register_heap_info_flag[flag_counter].arena_start_ptr = (void*) a;
       register_heap_info_flag[flag_counter].flag = 0;
       add_flag_counter();
