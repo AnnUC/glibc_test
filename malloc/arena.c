@@ -744,8 +744,8 @@ heap_trim (heap_info *heap, size_t pad)
       //delete a sub heap
       (void) mutex_lock (&register_heap_info_lock);
       delete_heap (heap);
-      
-      register_heap_info (0, ar_ptr, heap, -1, (int*)(-1));     
+
+      update_heap_info (0, heap, 0);     
       /*  seems like we can not delete an arena
       for (int i=0; i < NUM_HEAP_INFO_FLAG; i++) {
         if (register_heap_info_flag[i].arena_start_ptr == (void*)ar_ptr) {

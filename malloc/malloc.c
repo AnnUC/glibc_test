@@ -2480,7 +2480,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
           /* modified by Xiaoan Ding*/
           (void) mutex_unlock (&register_heap_info_lock);
-          register_heap_info (0, av, heap, HEAP_MAX_SIZE, (int*)(-1));
+          register_heap_info (0, heap, HEAP_MAX_SIZE);
           (void) mutex_unlock (&register_heap_info_lock);
 
           /* Use a newly allocated heap.  */
@@ -2592,7 +2592,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
                   /* modified by Xiaoan Ding*/
                   (void) mutex_lock (&register_heap_info_lock);
-                  register_heap_info (0, av, mbrk, size, (int*)(-1));
+                  update_heap_info (0, mbrk, size);
                   (void) mutex_unlock (&register_heap_info_lock);
 
                   /*
@@ -2633,7 +2633,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
           /* modified by Xiaoan Ding*/
           (void) mutex_lock (&register_heap_info_lock);
-          register_heap_info (0, av, av, (mp_.sbrk_base - (char*)av), (int*)(-1));
+          update_heap_info (0, av, (mp_.sbrk_base - (char*)av));
           (void) mutex_unlock (&register_heap_info_lock);
 
           /*
@@ -5463,6 +5463,10 @@ void register_heap_info (int mem_allocator_identifier, void* arena_start_ptr,
   syscall(332, mem_allocator_identifier, arena_start_ptr, subheap_start_ptr, subheap_size, new_error_info_flag);
 }
 
+void update_heap_info (int mem_allocator_identifier, void* subheap_start_ptr, size_t subheap_size) 
+{ 
+  syscall(333, mem_allocator_identifier, subheap_start_ptr, subheap_size);
+}
 
 strong_alias (__libc_calloc, __calloc) weak_alias (__libc_calloc, calloc)
 strong_alias (__libc_free, __cfree) weak_alias (__libc_free, cfree)
